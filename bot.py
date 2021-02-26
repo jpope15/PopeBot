@@ -5,7 +5,7 @@ import re
 from yahoo_fin import stock_info as si
 
 client = discord.Client()
-TOKEN = 'ODE0NTQyMjY2MDk3MDc0MjI2.YDfXmQ.gxgWYJYS1tsFa3PHv-ciMacmA2M' #move this to a .env file somehow
+TOKEN = 'ODE0NTQyMjY2MDk3MDc0MjI2.YDfXmQ.Xj31fyhmkZz-7hD1Qisn8JNbVfo' #move this to a .env file somehow
 
 #TODO
 #add a help feature
@@ -24,7 +24,6 @@ TOKEN = 'ODE0NTQyMjY2MDk3MDc0MjI2.YDfXmQ.gxgWYJYS1tsFa3PHv-ciMacmA2M' #move this
 #   -live prices
 #   -ticker : price : %increase 
 #   -maybe paper trades in the future
-
 
 @client.event
 async def on_ready():
@@ -56,17 +55,20 @@ async def on_message(message):
             await message.channel.send('Command is `p!stock <ticker>`, please try again')
             pass
         ticker = string[1]
-        data = si.get_quote_table(ticker, dict_result=True)
-        curr_price = si.get_live_price(ticker)
-        percent_change = 100 * (abs(curr_price - data['Previous Close']) / curr_price)
-        if curr_price < data['Previous Close']:
-            percent_change = percent_change * -1
-        await message.channel.send(
-            '**Ticker:** ' + ticker + 
-            '\n**Last Price:** $' +str(round(curr_price, 2)) + 
-            '\n**Open:** $' + str(round(data['Open'], 2)) + 
-            '\n**Prev Close:** $' + str(round(data['Previous Close'], 2)) + 
-            '\n**' + '%' + 'Change:** ' + str(round(percent_change, 2)) + '%' +
+        data = si.get_quote_data(ticker)
+        if data['error'] is not None:
+            await message.channel.send('Error, symbol not found.\nUse `p!stock <symbol>` to get' + 
+            'real time quote data.')
+        else: 
+            await message.channel.send(
+            '**Symbol:** ' + data['symbol'] + 
+            '\n**Company Name:** ' + data['shortName'] + 
+            '\n**Last Price:** $' +str(round(data['regularMarketPrice'], 2)) + 
+            '\n**Price Change:** $' + str(round(data['regularMarketChange'], 2)) + 
+            '\n**Percent Change:** ' + str(round(data['regularMarketChangePercent'], 2)) + '%' + 
+            '\n**Volume:** ' + '{:,}'.format(data['regularMarketVolume']) + 
+            '\n**Open:** $' + str(round(data['regularMarketOpen'], 2)) + 
+            '\n**Days Range:** ' + data['regularMarketDayRange'] + 
             '\n')
 
     #unknown command
