@@ -57,20 +57,24 @@ async def on_message(message):
             pass
         ticker = string[1]
         data = si.get_quote_data(ticker)
-        if data['error'] is not None:
-            await message.channel.send('Error, symbol not found.\nUse `p!stock <symbol>` to get' + 
-            'real time quote data.')
-        else: 
-            await message.channel.send(
-            '**Symbol:** ' + data['symbol'] + 
-            '\n**Company Name:** ' + data['shortName'] + 
-            '\n**Last Price:** $' +str(round(data['regularMarketPrice'], 2)) + 
-            '\n**Price Change:** $' + str(round(data['regularMarketChange'], 2)) + 
-            '\n**Percent Change:** ' + str(round(data['regularMarketChangePercent'], 2)) + '%' + 
-            '\n**Volume:** ' + '{:,}'.format(data['regularMarketVolume']) + 
-            '\n**Open:** $' + str(round(data['regularMarketOpen'], 2)) + 
-            '\n**Days Range:** ' + data['regularMarketDayRange'] + 
-            '\n')
+        await message.channel.send(
+        '**Symbol:** ' + data['symbol'] + 
+        '\n**Company Name:** ' + data['shortName'] + 
+        '\n**Last Price:** $' +str(round(data['regularMarketPrice'], 2)) + 
+        '\n**Price Change:** $' + str(round(data['regularMarketChange'], 2)) + 
+        '\n**Percent Change:** ' + str(round(data['regularMarketChangePercent'], 2)) + '%' + 
+        '\n**Volume:** ' + '{:,}'.format(data['regularMarketVolume']) + 
+        '\n**Open:** $' + str(round(data['regularMarketOpen'], 2)) + 
+        '\n**Days Range:** ' + data['regularMarketDayRange'] + 
+        '\n')
+
+    #help command
+    elif message.content.startswith('p!help'):
+        await message.channel.send('**Here is a list of my Commands:**\n\n' +
+        '**p!ping**\n' + '\tSends \'pong\' in response.\n' + 
+        '**p!hello**\n' + '\tSays hello to the sender.\n' + 
+        '**p!kill**\n' + '\tKills the bot in case of an error.\n' + 
+        '**p!stock** *<symbol>*\n' + '\tReturns real time quote data for the symbol inputted.\n')
 
     #unknown command
     elif message.content.startswith('p!'):
