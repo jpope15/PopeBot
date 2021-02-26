@@ -5,7 +5,6 @@ import re
 from yahoo_fin import stock_info as si
 
 client = discord.Client()
-TOKEN = 'ODE0NTQyMjY2MDk3MDc0MjI2.YDfXmQ.gxgWYJYS1tsFa3PHv-ciMacmA2M' #move this to a .env file somehow
 
 #TODO
 #add a help feature
