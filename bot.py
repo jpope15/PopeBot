@@ -1,11 +1,12 @@
 import discord
-import random
 import os
-import re
+import bot_server
+from dotenv import load_dotenv
 from yahoo_fin import stock_info as si
 
+load_dotenv()
+TOKEN = os.getenv('TOKEN')
 client = discord.Client()
-TOKEN = 'ODE0NTQyMjY2MDk3MDc0MjI2.YDfXmQ.Xj31fyhmkZz-7hD1Qisn8JNbVfo'
 
 
 #TODO
@@ -79,5 +80,8 @@ async def on_message(message):
     #unknown command
     elif message.content.startswith('p!'):
         await message.add_reaction('❓')
+
+#starting the server
+bot_server.keep_running()
 
 client.run(TOKEN)
