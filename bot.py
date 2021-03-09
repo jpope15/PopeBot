@@ -10,22 +10,12 @@ client = discord.Client()
 
 
 #TODO
-#add a help feature
-#   -p!help
-#   -lists commands and a description
-
+#Add embeded messages to help feature
 
 #add a meme feature
 #   -p!meme
 #   -scrapes reddit for new memes
 #   -always refreshed
-
-#DONE
-#stock market feature
-#   -p!stock <ticker>
-#   -live prices
-#   -ticker : price : %increase 
-#   -maybe paper trades in the future
 
 @client.event
 async def on_ready():
