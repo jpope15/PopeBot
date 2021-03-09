@@ -58,16 +58,18 @@ async def on_message(message):
             pass
         ticker = string[1]
         data = si.get_quote_data(ticker)
-        await message.channel.send(
-        '**Symbol:** ' + data['symbol'] + 
-        '\n**Company Name:** ' + data['shortName'] + 
-        '\n**Last Price:** $' +str(round(data['regularMarketPrice'], 2)) + 
-        '\n**Price Change:** $' + str(round(data['regularMarketChange'], 2)) + 
-        '\n**Percent Change:** ' + str(round(data['regularMarketChangePercent'], 2)) + '%' + 
-        '\n**Volume:** ' + '{:,}'.format(data['regularMarketVolume']) + 
-        '\n**Open:** $' + str(round(data['regularMarketOpen'], 2)) + 
-        '\n**Days Range:** ' + data['regularMarketDayRange'] + 
-        '\n')
+        volume = "{:,}".format(round(data['regularMarketVolume'], 2))
+        embedVar = discord.Embed(title= data['symbol']+" Data", color=0x7289da)
+        embedVar.add_field(name="Symbol", value=data['symbol'], inline=False)
+        embedVar.add_field(name="Company Name", value=data['shortName'], inline=False)
+        embedVar.add_field(name="Market Price", value="$"+str(round(data['regularMarketPrice'], 2)), inline=False)
+        embedVar.add_field(name="Price Change", value="$"+str(round(data['regularMarketChange'], 2)), inline=False)
+        embedVar.add_field(name="Percent Change", value=str(round(data['regularMarketChangePercent'], 2))+"%", inline=False)
+        embedVar.add_field(name="Volume", value=volume, inline=False)
+        embedVar.add_field(name="Open", value="$"+str(round(data['regularMarketOpen'], 2)), inline=False)
+        embedVar.add_field(name="Price Change", value=data['regularMarketDayRange'], inline=False)
+
+        await message.channel.send(embed=embedVar)
 
     #help command
     elif message.content.startswith('p!help'):
