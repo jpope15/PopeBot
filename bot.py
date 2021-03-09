@@ -57,7 +57,7 @@ async def on_message(message):
         embedVar.add_field(name="Percent Change", value=str(round(data['regularMarketChangePercent'], 2))+"%", inline=False)
         embedVar.add_field(name="Volume", value=volume, inline=False)
         embedVar.add_field(name="Open", value="$"+str(round(data['regularMarketOpen'], 2)), inline=False)
-        embedVar.add_field(name="Price Change", value=data['regularMarketDayRange'], inline=False)
+        embedVar.add_field(name="Day's Range", value=data['regularMarketDayRange'], inline=False)
 
         await message.channel.send(embed=embedVar)
 
