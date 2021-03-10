@@ -11,7 +11,8 @@ client = discord.Client()
 
 #TODO
 #Add embeded messages to help feature
-
+#search database to see if stock ticker exists
+#   -just for error handling
 #add a meme feature
 #   -p!meme
 #   -scrapes reddit for new memes
@@ -63,12 +64,13 @@ async def on_message(message):
 
     #help command
     elif message.content.startswith('p!help'):
-        await message.channel.send('**Here is a list of my Commands:**\n\n' +
-        '**p!ping**\n' + '\tSends \'pong\' in response.\n' + 
-        '**p!hello**\n' + '\tSays hello to the sender.\n' + 
-        '**p!kill**\n' + '\tKills the bot in case of an error.\n' + 
-        '**p!stock** *<symbol>*\n' + '\tReturns real time quote data for the symbol inputted.\n')
+        embedVar = discord.Embed(title="PopeBot Commands", color=0x7289da)
+        embedVar.add_field(name="p!stock <ticker>", value="\tReturns real time quote data for the ticker inputted", inline=False)
+        embedVar.add_field(name="p!ping", value="\tSends \'pong\' in response", inline=False)
+        embedVar.add_field(name="p!hello", value="\tGreets the sender", inline=False)
+        embedVar.add_field(name="p!kill", value="\tWill kill me in case of an error", inline=False)
 
+        await message.channel.send(embed=embedVar)
     #unknown command
     elif message.content.startswith('p!'):
         await message.add_reaction('❓')
