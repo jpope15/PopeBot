@@ -18,7 +18,7 @@ async def hello(ctx):
     await ctx.send('Hello, {}!'.format(ctx.author.name))
 
 @bot.command()
-async def help(ctx):
+async def h(ctx):
     embedVar = discord.Embed(title="PopeBot Commands", color=0x7289da)
     embedVar.add_field(name="p!ping", value="\tSends \'pong\' in response", inline=False)
     embedVar.add_field(name="p!hello", value="\tGreets the sender", inline=False)
