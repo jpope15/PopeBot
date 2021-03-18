@@ -1,81 +1,49 @@
+from discord.ext import commands
 import discord
 import os
 import bot_server
 from dotenv import load_dotenv
 from yahoo_fin import stock_info as si
 
+bot = commands.Bot(command_prefix='p!')
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
-client = discord.Client()
 
+@bot.command()
+async def ping(ctx):
+    await ctx.send('Pong')
 
-#TODO
-#Add embeded messages to help feature
-#search database to see if stock ticker exists
-#   -just for error handling
-#add a meme feature
-#   -p!meme
-#   -scrapes reddit for new memes
-#   -always refreshed
+@bot.command()
+async def hello(ctx):
+    await ctx.send('Hello, {}!'.format(ctx.author.name))
 
-@client.event
-async def on_ready():
-    print('{0.user} has logged on'.format(client))
+@bot.command()
+async def help(ctx):
+    embedVar = discord.Embed(title="PopeBot Commands", color=0x7289da)
+    embedVar.add_field(name="p!ping", value="\tSends \'pong\' in response", inline=False)
+    embedVar.add_field(name="p!hello", value="\tGreets the sender", inline=False)
+    embedVar.add_field(name="p!stock <ticker>", value="\tReturns real time quote data for the ticker inputted", inline=False)
+    await ctx.send(embed=embedVar)
 
-@client.event
-async def on_message(message):
+@bot.command()
+async def stock(ctx, arg):
+    ticker = arg
+    data = si.get_quote_data(ticker)
+    volume = "{:,}".format(round(data['regularMarketVolume'], 2))
+    embedVar = discord.Embed(title= data['symbol']+" Data", color=0x7289da)
+    embedVar.add_field(name="Symbol", value=data['symbol'], inline=False)
+    embedVar.add_field(name="Company Name", value=data['shortName'], inline=False)
+    embedVar.add_field(name="Market Price", value="$"+str(round(data['regularMarketPrice'], 2)), inline=False)
+    embedVar.add_field(name="Price Change", value="$"+str(round(data['regularMarketChange'], 2)), inline=False)
+    embedVar.add_field(name="Percent Change", value=str(round(data['regularMarketChangePercent'], 2))+"%", inline=False)
+    embedVar.add_field(name="Volume", value=volume, inline=False)
+    embedVar.add_field(name="Open", value="$"+str(round(data['regularMarketOpen'], 2)), inline=False)
+    embedVar.add_field(name="Day's Range", value=data['regularMarketDayRange'], inline=False)
 
-    #ignore messages made by bot
-    if message.author == client.user:
-        return
+    await ctx.send(embed=embedVar)
 
-    #pretty self explanatory
-    elif message.content.startswith('p!hello'):
-        await message.channel.send('Dont talk to me ever again {}'.format(message.author.name))
-
-    #killing the bot
-    elif message.content.startswith('p!kill'):
-        await message.channel.send('*dies*')
-        await client.close()
-    #ping test
-    elif message.content.startswith('p!ping'):
-        await message.channel.send('pong')
-    
-    #STONKS
-    elif message.content.startswith('p!stock'):
-        string = message.content.split()
-        if len(string) == 1:
-            await message.channel.send('Command is `p!stock <ticker>`, please try again')
-            pass
-        ticker = string[1]
-        data = si.get_quote_data(ticker)
-        volume = "{:,}".format(round(data['regularMarketVolume'], 2))
-        embedVar = discord.Embed(title= data['symbol']+" Data", color=0x7289da)
-        embedVar.add_field(name="Symbol", value=data['symbol'], inline=False)
-        embedVar.add_field(name="Company Name", value=data['shortName'], inline=False)
-        embedVar.add_field(name="Market Price", value="$"+str(round(data['regularMarketPrice'], 2)), inline=False)
-        embedVar.add_field(name="Price Change", value="$"+str(round(data['regularMarketChange'], 2)), inline=False)
-        embedVar.add_field(name="Percent Change", value=str(round(data['regularMarketChangePercent'], 2))+"%", inline=False)
-        embedVar.add_field(name="Volume", value=volume, inline=False)
-        embedVar.add_field(name="Open", value="$"+str(round(data['regularMarketOpen'], 2)), inline=False)
-        embedVar.add_field(name="Day's Range", value=data['regularMarketDayRange'], inline=False)
-
-        await message.channel.send(embed=embedVar)
-
-    #help command
-    elif message.content.startswith('p!help'):
-        embedVar = discord.Embed(title="PopeBot Commands", color=0x7289da)
-        embedVar.add_field(name="p!stock <ticker>", value="\tReturns real time quote data for the ticker inputted", inline=False)
-        embedVar.add_field(name="p!ping", value="\tSends \'pong\' in response", inline=False)
-        embedVar.add_field(name="p!hello", value="\tGreets the sender", inline=False)
-        embedVar.add_field(name="p!kill", value="\tWill kill me in case of an error", inline=False)
-
-        await message.channel.send(embed=embedVar)
-    #unknown command
-    elif message.content.startswith('p!'):
-        await message.add_reaction('❓')
 
 #starting the server
 bot_server.keep_running()
 
-client.run(TOKEN)
+bot.run(TOKEN)
