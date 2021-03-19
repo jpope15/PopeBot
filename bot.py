@@ -1,13 +1,24 @@
-from discord.ext import commands
 import discord
 import os
 import bot_server
+import asyncpraw
+import requests
+import re
+import random
 from dotenv import load_dotenv
 from yahoo_fin import stock_info as si
+from discord.ext import commands
 
-bot = commands.Bot(command_prefix='p!')
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
+REDDIT_ID = os.getenv('REDDIT_ID')
+REDDIT_SECRET = os.getenv('REDDIT_SECRET')
+
+
+bot = commands.Bot(command_prefix='p!')
+
+subreddits = ['memes', 'dankmeme']
+dark_subreddits = ['offensivememesoof']
 
 @bot.command()
 async def ping(ctx):
@@ -42,6 +53,22 @@ async def stock(ctx, arg):
 
     await ctx.send(embed=embedVar)
 
+@bot.command()
+async def meme(ctx, dark: str=""):
+    reddit = asyncpraw.Reddit(
+        client_id=REDDIT_ID,
+        client_secret=REDDIT_SECRET,
+        user_agent='popebot',
+    )
+    if dark.lower() == 'offensive':
+        sub = random.choice(dark_subreddits)
+    else:
+        sub = random.choice(subreddits)
+
+    submissions = (await reddit.subreddit(sub)).hot(limit=10)
+
+    submission = random.choice([submission async for submission in submissions])        
+    await ctx.send(submission.url)
 
 #starting the server
 bot_server.keep_running()
