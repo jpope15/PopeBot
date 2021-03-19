@@ -2,8 +2,6 @@ import discord
 import os
 import bot_server
 import asyncpraw
-import requests
-import re
 import random
 from dotenv import load_dotenv
 from yahoo_fin import stock_info as si
@@ -17,8 +15,9 @@ REDDIT_SECRET = os.getenv('REDDIT_SECRET')
 
 bot = commands.Bot(command_prefix='p!')
 
-subreddits = ['memes', 'dankmeme']
+subreddits = ['dankmeme', 'nukedmemes', 'meirl', 'okaybuddyretard']
 dark_subreddits = ['offensivememesoof']
+cursed_subreddits = ['cursedimages']
 
 @bot.command()
 async def ping(ctx):
@@ -62,10 +61,13 @@ async def meme(ctx, dark: str=""):
     )
     if dark.lower() == 'offensive':
         sub = random.choice(dark_subreddits)
+    elif dark.lower() == 'cursed':
+        sub = random.choice(cursed_subreddits)
     else:
         sub = random.choice(subreddits)
 
-    submissions = (await reddit.subreddit(sub)).hot(limit=10)
+
+    submissions = (await reddit.subreddit(sub)).new(limit=50)
 
     submission = random.choice([submission async for submission in submissions])        
     await ctx.send(submission.url)
