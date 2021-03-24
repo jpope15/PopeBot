@@ -12,6 +12,12 @@ TOKEN = os.getenv('TOKEN')
 REDDIT_ID = os.getenv('REDDIT_ID')
 REDDIT_SECRET = os.getenv('REDDIT_SECRET')
 
+reddit = asyncpraw.Reddit(
+        client_id=REDDIT_ID,
+        client_secret=REDDIT_SECRET,
+        user_agent='popebot',
+    )
+
 
 bot = commands.Bot(command_prefix='p!')
 
@@ -54,11 +60,6 @@ async def stock(ctx, arg):
 
 @bot.command()
 async def meme(ctx, dark: str=""):
-    reddit = asyncpraw.Reddit(
-        client_id=REDDIT_ID,
-        client_secret=REDDIT_SECRET,
-        user_agent='popebot',
-    )
     if dark.lower() == 'offensive':
         sub = random.choice(dark_subreddits)
     elif dark.lower() == 'cursed':
@@ -68,6 +69,14 @@ async def meme(ctx, dark: str=""):
 
 
     submissions = (await reddit.subreddit(sub)).new(limit=50)
+
+    submission = random.choice([submission async for submission in submissions])        
+    await ctx.send(submission.url)
+
+#at bryans request
+@bot.command()
+async def rule34(ctx):
+    submissions = (await reddit.subreddit('rule34')).new(limit=50)
 
     submission = random.choice([submission async for submission in submissions])        
     await ctx.send(submission.url)
