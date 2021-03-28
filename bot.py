@@ -24,26 +24,20 @@ bot = commands.Bot(command_prefix='p!')
 subreddits = ['dankmeme', 'nukedmemes', 'meirl', 'okaybuddyretard']
 dark_subreddits = ['offensivememesoof']
 cursed_subreddits = ['cursedimages']
+programmer_subreddits = ['programmerhumor']
+monke_subreddits = ['monke', 'ape']
 
-@bot.command()
+@bot.command(help='sends pong in response')
 async def ping(ctx):
     await ctx.send('Pong')
 
-@bot.command()
+@bot.command(help='Greets the sender')
 async def hello(ctx):
     await ctx.send('Hello, {}!'.format(ctx.author.name))
 
-@bot.command()
-async def h(ctx):
-    embedVar = discord.Embed(title="PopeBot Commands", color=0x7289da)
-    embedVar.add_field(name="p!ping", value="\tSends \'pong\' in response", inline=False)
-    embedVar.add_field(name="p!hello", value="\tGreets the sender", inline=False)
-    embedVar.add_field(name="p!stock <ticker>", value="\tReturns real time quote data for the ticker inputted", inline=False)
-    await ctx.send(embed=embedVar)
-
-@bot.command()
-async def stock(ctx, arg):
-    ticker = arg
+@bot.command(help='returns real-time stock data on the symbol inputted')
+async def stock(ctx, symbol):
+    ticker = symbol
     data = si.get_quote_data(ticker)
     volume = "{:,}".format(round(data['regularMarketVolume'], 2))
     embedVar = discord.Embed(title= data['symbol']+" Data", color=0x7289da)
@@ -58,14 +52,14 @@ async def stock(ctx, arg):
 
     await ctx.send(embed=embedVar)
 
-@bot.command()
-async def meme(ctx, dark: str=""):
-    if dark.lower() == 'offensive':
-        sub = random.choice(dark_subreddits)
-    elif dark.lower() == 'cursed':
-        sub = random.choice(cursed_subreddits)
+@bot.command(help='Returns a meme\n\nmeme_type:\n\t-offensive\n\t-programmer')
+async def meme(ctx, meme_type: str=""):
+    if meme_type.lower() == 'offensive':
+      sub = random.choice(dark_subreddits)
+    elif  meme_type.lower() == 'programmer':
+      sub = random.choice(programmer_subreddits)
     else:
-        sub = random.choice(subreddits)
+      sub = random.choice(subreddits)
 
 
     submissions = (await reddit.subreddit(sub)).new(limit=50)
@@ -74,12 +68,22 @@ async def meme(ctx, dark: str=""):
     await ctx.send(submission.url)
 
 #at bryans request
-@bot.command()
+@bot.command(help='returns a NSFW picture')
 async def rule34(ctx):
-    submissions = (await reddit.subreddit('rule34')).new(limit=50)
 
-    submission = random.choice([submission async for submission in submissions])        
-    await ctx.send(submission.url)
+    if ctx.author == 'Boran#3803':
+      await ctx.send('You are banned from this command')
+    else: 
+      submissions = (await reddit.subreddit('rule34')).new(limit=50)
+
+      submission = random.choice([submission async for submission in submissions])        
+      await ctx.send(submission.url)
+
+@bot.command(help='returns a picture of a monkey')
+async def monke(ctx):
+      submissions = (await reddit.subreddit(random.choice(monke_subreddits))).new(limit=50)
+      submission = random.choice([submission async for submission in submissions])        
+      await ctx.send(submission.url)
 
 #starting the server
 bot_server.keep_running()
