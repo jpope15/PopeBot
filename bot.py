@@ -6,6 +6,7 @@ import random
 from dotenv import load_dotenv
 from yahoo_fin import stock_info as si
 from discord.ext import commands
+from discord.ext.commands.cooldowns import BucketType
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -26,6 +27,12 @@ dark_subreddits = ['offensivememesoof']
 cursed_subreddits = ['cursedimages']
 programmer_subreddits = ['programmerhumor']
 monke_subreddits = ['monke', 'ape']
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send('This command is on a %.2fs cooldown' % error.retry_after)
+    raise error  
 
 @bot.command(help='sends pong in response')
 async def ping(ctx):
@@ -69,8 +76,11 @@ async def meme(ctx, meme_type: str=""):
 
 #at bryans request
 @bot.command(help='returns a NSFW picture')
+@commands.cooldown(1, 15, commands.BucketType.guild)
 async def rule34(ctx):
-
+  if not ctx.channel.is_nsfw():
+    await ctx.send('Cannot use that command here.')
+  else:
     if ctx.author == 'Boran#3803':
       await ctx.send('You are banned from this command')
     else: 
