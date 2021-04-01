@@ -43,6 +43,7 @@ async def hello(ctx):
     await ctx.send('Hello, {}!'.format(ctx.author.name))
 
 @bot.command(help='returns real-time stock data on the symbol inputted')
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def stock(ctx, symbol):
     ticker = symbol
     data = si.get_quote_data(ticker)
@@ -60,6 +61,7 @@ async def stock(ctx, symbol):
     await ctx.send(embed=embedVar)
 
 @bot.command(help='Returns a meme\n\nmeme_type:\n\t-offensive\n\t-programmer')
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def meme(ctx, meme_type: str=""):
     if meme_type.lower() == 'offensive':
       sub = random.choice(dark_subreddits)
@@ -74,26 +76,22 @@ async def meme(ctx, meme_type: str=""):
     submission = random.choice([submission async for submission in submissions])        
     await ctx.send(submission.url)
 
-#at bryans request
-@bot.command(help='returns a NSFW picture')
-@commands.cooldown(1, 15, commands.BucketType.guild)
-async def rule34(ctx):
-  if not ctx.channel.is_nsfw():
-    await ctx.send('Cannot use that command here.')
-  else:
-    if ctx.author == 'Boran#3803':
-      await ctx.send('You are banned from this command')
-    else: 
-      submissions = (await reddit.subreddit('rule34')).new(limit=50)
-
-      submission = random.choice([submission async for submission in submissions])        
-      await ctx.send(submission.url)
-
 @bot.command(help='returns a picture of a monkey')
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def monke(ctx):
       submissions = (await reddit.subreddit(random.choice(monke_subreddits))).new(limit=50)
       submission = random.choice([submission async for submission in submissions])        
       await ctx.send(submission.url)
+
+@bot.command()
+async def say(ctx, channelid, *, text):
+    channel = bot.get_channel(int(channelid))
+    if (ctx.author.id == 450423498448437249):
+        await channel.send(text)
+    else:
+        if isinstance(ctx.channel, discord.abc.PrivateChannel):
+            await ctx.channel.send('no')
+
 
 #starting the server
 bot_server.keep_running()
