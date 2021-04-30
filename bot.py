@@ -6,7 +6,6 @@ import random
 from dotenv import load_dotenv
 from yahoo_fin import stock_info as si
 from discord.ext import commands
-from discord.ext.commands.cooldowns import BucketType
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
