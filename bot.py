@@ -27,12 +27,20 @@ dark_subreddits = ['offensivememesoof']
 cursed_subreddits = ['cursedimages']
 programmer_subreddits = ['programmerhumor']
 monke_subreddits = ['monke', 'ape']
+no_response = ['No', "Absolutely not", 'Not gonna happen chief',
+              'Just stop trying', 'Think you\'re funny huh', 'im going to jump off a bridge']
 
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.send('This command is on a %.2fs cooldown' % error.retry_after)
     raise error  
+
+@bot.event
+async def on_message_delete(ctx):
+  message = '{}:'.format(ctx.author.name)
+  message = message + ' ' + ctx.content
+  await ctx.channel.send(message)
 
 @bot.command(help='sends pong in response')
 async def ping(ctx):
@@ -61,7 +69,6 @@ async def stock(ctx, symbol):
     await ctx.send(embed=embedVar)
 
 @bot.command(help='Returns a meme\n\nmeme_type:\n\t-offensive\n\t-programmer')
-@commands.cooldown(1, 5, commands.BucketType.guild)
 async def meme(ctx, meme_type: str=""):
     if meme_type.lower() == 'offensive':
       sub = random.choice(dark_subreddits)
@@ -77,11 +84,15 @@ async def meme(ctx, meme_type: str=""):
     await ctx.send(submission.url)
 
 @bot.command(help='returns a picture of a monkey')
-@commands.cooldown(1, 5, commands.BucketType.guild)
 async def monke(ctx):
       submissions = (await reddit.subreddit(random.choice(monke_subreddits))).new(limit=50)
       submission = random.choice([submission async for submission in submissions])        
       await ctx.send(submission.url)
+
+@bot.command()
+@commands.cooldown(1, 10, commands.BucketType.guild)
+async def rule34(ctx):
+  await ctx.send(random.choice(no_response))
 
 @bot.command()
 async def say(ctx, channelid, *, text):
